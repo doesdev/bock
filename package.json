@@ -31,5 +31,8 @@
   "homepage": "https://github.com/doesdev/bock#readme",
   "devDependencies": {
     "ava": "^0.18.2"
+  },
+  "dependencies": {
+    "app-root-path": "^2.0.1"
   }
 }

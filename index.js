@@ -2,6 +2,7 @@
 
 // Setup
 const path = require('path')
+const appRoot = require('app-root-path')
 const writer = path.join(__dirname, 'writer.js')
 const errProps = [
   'name',
@@ -46,7 +47,7 @@ const boolify = (val, fallback) => {
 module.exports = (opts = {}) => {
   let appName = opts.appName || 'bock'
   let logLevel = opts.logLevel || 'debug'
-  let logBase = opts.logBase || path.join(__dirname, 'logs')
+  let logBase = opts.logBase || path.join(appRoot, 'logs')
   let toConsole = boolify(opts.toConsole, true)
   let toFile = boolify(opts.toFile, true)
   let whitelist = opts.whitelist

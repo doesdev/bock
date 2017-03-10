@@ -2,7 +2,7 @@
 
 // Setup
 const path = require('path')
-const appRoot = require('app-root-path')
+const appRoot = require('app-root-path').toString()
 const writer = path.join(__dirname, 'writer.js')
 const errProps = [
   'name',

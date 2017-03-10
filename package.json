@@ -1,0 +1,35 @@
+{
+  "name": "bock",
+  "version": "1.0.0",
+  "description": "Bock is a strong lager (logger) of German (US) origin",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "writer.js"
+  ],
+  "scripts": {
+    "test": "ava --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doesdev/bock.git"
+  },
+  "keywords": [
+    "logger",
+    "log",
+    "to",
+    "file"
+  ],
+  "author": "Andrew Carpenter (https://github.com/doesdev)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/doesdev/bock/issues"
+  },
+  "homepage": "https://github.com/doesdev/bock#readme",
+  "devDependencies": {
+    "ava": "^0.18.2"
+  }
+}

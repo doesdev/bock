@@ -86,7 +86,7 @@ module.exports = (opts = {}) => {
       logText += `\n  ${initCap(k)}: ${val}`
     })
     if (toFile) {
-      let logFilePath = path.join(logBase, `${appName}-${today}.json`)
+      let logFilePath = path.join(logBase, `${appName}-${today()}.json`)
       try {
         commitLogToFile.send({logFilePath, log})
       } catch (e) {

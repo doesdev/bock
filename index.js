@@ -1,6 +1,7 @@
 'use strict'
 
 // Setup
+const hoy = require('hoy')
 const path = require('path')
 const appRoot = require('app-root-path').toString()
 const writer = path.join(__dirname, 'writer.js')
@@ -12,16 +13,6 @@ const errProps = [
   'stack',
   'meta'
 ]
-
-// Helpers
-const today = () => {
-  let d = new Date()
-  return (
-    `0${d.getMonth() + 1}`.slice(-2) + '-' +
-    `0${d.getDate()}`.slice(-2) + '-' +
-    d.getFullYear()
-  )
-}
 
 const levelToInt = (level) => {
   switch (level) {
@@ -89,7 +80,7 @@ module.exports = (opts = {}) => {
       logText += `\n  ${initCap(k)}: ${val}`
     })
     if (toFile) {
-      let logFilePath = path.join(logBase, `${appName}-${today()}.json`)
+      let logFilePath = path.join(logBase, `${appName}-${hoy().full}.json`)
       try {
         commitLogToFile.send({logFilePath, log})
       } catch (e) {

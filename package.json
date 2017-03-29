@@ -1,6 +1,6 @@
 {
   "name": "bock",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Bock is a strong lager (logger) of German (US) origin",
   "engines": {
     "node": ">=6.0.0"
@@ -33,6 +33,7 @@
     "ava": "^0.18.2"
   },
   "dependencies": {
-    "app-root-path": "^2.0.1"
+    "app-root-path": "^2.0.1",
+    "hoy": "^1.0.1"
   }
 }

@@ -14,6 +14,12 @@ const errProps = [
   'meta'
 ]
 
+// Helpers
+const today = () => {
+  let d = hoy()
+  return `${d.month}-${d.day}-${d.year}`
+}
+
 const levelToInt = (level) => {
   switch (level) {
     case 'info': return 1
@@ -80,7 +86,7 @@ module.exports = (opts = {}) => {
       logText += `\n  ${initCap(k)}: ${val}`
     })
     if (toFile) {
-      let logFilePath = path.join(logBase, `${appName}-${hoy().full}.json`)
+      let logFilePath = path.join(logBase, `${appName}-${today}.json`)
       try {
         commitLogToFile.send({logFilePath, log})
       } catch (e) {

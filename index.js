@@ -47,7 +47,9 @@ module.exports = (opts = {}) => {
   let logBase = opts.logBase || path.join(appRoot, 'logs')
   let toConsole = boolify(opts.toConsole, true)
   let toFile = boolify(opts.toFile, true)
-  let whitelist = opts.whitelist
+  let wl = {}
+  let wlAry = Array.isArray(opts.whitelist) ? opts.whitelist : [opts.whitelist]
+  wlAry.forEach((m) => { if (m) wl[m] = true })
   let fork, commitLogToFile
   if (toFile) {
     try {
@@ -64,10 +66,8 @@ module.exports = (opts = {}) => {
   }
   let logIt = (err = new Error(), level = 'warn') => {
     if (levelToInt(level) < levelToInt(logLevel)) return
-    if (Array.isArray(whitelist)) {
-      let name = err.name || err.toString()
-      if (name && whitelist.indexOf(name) !== -1) return
-    }
+    let name = err.name || err.toString()
+    if (wl[name] || wl[err.message]) return
     let log = {}
     log.time = Date.now()
     log.level = level

@@ -1,4 +1,4 @@
-# bock [![NPM version](https://badge.fury.io/js/bock.svg)](https://npmjs.org/package/bock)   [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
+# bock [![NPM version](https://badge.fury.io/js/bock.svg)](https://npmjs.org/package/bock)   [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)   [![Dependency Status](https://dependencyci.com/github/doesdev/bock/badge)](https://dependencyci.com/github/doesdev/bock)
 
 > Bock is a strong ~~lager~~ logger of ~~German~~ US origin
 

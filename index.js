@@ -5,6 +5,7 @@ const hoy = require('hoy')
 const path = require('path')
 const appRoot = require('app-root-path').toString()
 const writer = path.join(__dirname, 'writer.js')
+const lvls = {debug: 0, info: 1, warn: 2, fatal: 3}
 const errProps = [
   'name',
   'message',
@@ -20,15 +21,6 @@ const today = () => {
   return `${d.month}-${d.day}-${d.year}`
 }
 
-const levelToInt = (level) => {
-  switch (level) {
-    case 'info': return 1
-    case 'warn': return 2
-    case 'fatal': return 3
-    default: return 0
-  }
-}
-
 const initCap = (str) => {
   str = str || ''
   return `${str.charAt(0).toUpperCase()}${str.slice(1)}`
@@ -40,13 +32,33 @@ const boolify = (val, fallback) => {
   return fallback
 }
 
+const stringer = (obj) => {
+  try {
+    return JSON.stringify(obj)
+  } catch (ex) {
+    let newObj = {}
+    try {
+      Object.keys(obj).forEach((k) => {
+        try {
+          newObj[k] = JSON.parse(JSON.stringify(obj[k]))
+        } catch (ex) {}
+      })
+      return JSON.stringify(newObj)
+    } catch (ex) {
+      return '{"bockError":"JSON.stringify failed for error"}'
+    }
+  }
+}
+
 // Export main function
 module.exports = (opts = {}) => {
   let appName = opts.appName || 'bock'
   let logLevel = opts.logLevel || 'debug'
+  if (!lvls.hasOwnProperty(logLevel)) logLevel = 'debug'
   let logBase = opts.logBase || path.join(appRoot, 'logs')
   let toConsole = boolify(opts.toConsole, true)
   let toFile = boolify(opts.toFile, true)
+  let newline = boolify(opts.newline, true)
   let wl = {}
   let wlAry = Array.isArray(opts.whitelist) ? opts.whitelist : [opts.whitelist]
   wlAry.forEach((m) => { if (m) wl[m] = true })
@@ -65,14 +77,15 @@ module.exports = (opts = {}) => {
     commitLogToFile.on('message', console.error)
   }
   let logIt = (err = new Error(), level = 'warn') => {
-    if (levelToInt(level) < levelToInt(logLevel)) return
+    if ((lvls[level] || 0) < (lvls[logLevel] || 0)) return
     let name = err.name || err.toString()
     if (wl[name] || wl[err.message]) return
     let log = {}
     log.time = Date.now()
     log.level = level
-    if (typeof err === 'string') log.message = err
-    else {
+    if (typeof err === 'string') {
+      log.message = err
+    } else {
       Object.assign(log, err)
       errProps.forEach((p) => { if (err[p]) log[p] = err[p] })
     }
@@ -82,25 +95,20 @@ module.exports = (opts = {}) => {
     logText += `\n  Timestamp: ${new Date(log.time).toLocaleString()}`
     logProps.forEach((k) => {
       if (k === 'time' || k === 'level') return
-      let val = typeof log[k] === 'object' ? JSON.stringify(log[k]) : log[k]
+      let val = typeof log[k] === 'object' ? stringer(log[k]) : log[k]
       logText += `\n  ${initCap(k)}: ${val}`
     })
     if (toFile) {
       let logFilePath = path.join(logBase, `${appName}-${today()}.json`)
       try {
-        commitLogToFile.send({logFilePath, log})
+        commitLogToFile.send({logFilePath, log: stringer(log), newline})
       } catch (e) {
         commitLogToFile = fork(writer)
       }
     }
-    if (toConsole) {
-      switch (level) {
-        case 'info': return console.info(logText)
-        case 'warn': return console.warn(logText)
-        case 'fatal': return console.error(logText)
-        default: return console.log(logText)
-      }
-    }
+    if (!toConsole) return
+    let alias = {fatal: 'error'}
+    return (console[alias[level] || level] || console.log)(logText)
   }
   return {
     debug: (err) => logIt(err, 'debug'),

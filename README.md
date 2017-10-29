@@ -15,6 +15,7 @@ Bock exports a single function which returns an object with four methods (`debug
   - **appName** *(String - optional - default: 'bock')* Base name to use for log files (`${appName}-${month}-${day}-${year}.json`)
   - **logBase** *(String - optional - default: `__dirname + '/logs'`)* Path for log files
   - **logLevel** *(String - optional - default: 'debug')* Threshold for logging (i.e. if warn it won't log debug or info errors)
+  - **newline** *(Boolean - optional - default: `true`)* Use newline delimited JSON (highly recommended for performance reasons)
   - **toConsole** *(Boolean - optional - default: true)* Should log to console
   - **toFile** *(Boolean - optional - default: true)* Should log to file
   - **whitelist** *(Array - optional)* List of ignored error types / messages

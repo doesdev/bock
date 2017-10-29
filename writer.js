@@ -4,21 +4,30 @@
 const fs = require('fs')
 const maxAttempts = 10
 
-// Main
-process.on('message', (data) => {
-  let writeIt = (attempts) => {
-    try {
-      var logs = require(data.logFilePath)
-    } catch (e) {
-      logs = []
-    }
-    logs.push(data.log)
-    try {
-      fs.writeFileSync(data.logFilePath, JSON.stringify(logs))
-    } catch (e) {
-      if (attempts < maxAttempts) return writeIt(attempts + 1)
-      process.send(e)
-    }
+// helpers
+const writeIt = (data, attempts) => {
+  try {
+    fs.appendFileSync(data.logFilePath, `${data.log}\n`)
+  } catch (e) {
+    if (attempts < maxAttempts) return writeIt(data, attempts + 1)
+    process.send(e)
   }
-  writeIt(0)
-})
+}
+
+const writeItAsAry = (data, attempts) => {
+  try {
+    var logs = require(data.logFilePath)
+  } catch (e) {
+    logs = []
+  }
+  logs.push(JSON.parse(data.log))
+  try {
+    fs.writeFileSync(data.logFilePath, JSON.stringify(logs))
+  } catch (e) {
+    if (attempts < maxAttempts) return writeItAsAry(data, attempts + 1)
+    process.send(e)
+  }
+}
+
+// main
+process.on('message', (d) => d.newline ? writeIt(d, 0) : writeItAsAry(d, 0))

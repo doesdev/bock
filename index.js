@@ -107,7 +107,7 @@ module.exports = (opts = {}) => {
       }
     }
     if (!toConsole) return
-    let alias = {fatal: 'error'}
+    let alias = {debug: 'log', fatal: 'error'}
     return (console[alias[level] || level] || console.log)(logText)
   }
   return {

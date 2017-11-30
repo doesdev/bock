@@ -1,6 +1,6 @@
 {
   "name": "bock",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Bock is a strong lager (logger) of German (US) origin",
   "engines": {
     "node": ">=6.0.0"

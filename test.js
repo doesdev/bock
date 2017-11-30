@@ -20,9 +20,9 @@ const delay = async (d = 500) => {
 }
 
 test.afterEach(() => {
-  let logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
-  fs.unlinkSync(logFile)
   try {
+    let logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
+    fs.unlinkSync(logFile)
     fs.rmdirSync(opts.logBase)
   } catch (ex) {}
 })
@@ -65,4 +65,33 @@ test.serial('circular reference', async (assert) => {
   err.meta = meta
   assert.notThrows(() => logger.debug(err))
   await delay(500)
+})
+
+test.serial('console output is as expected', async (assert) => {
+  let logger = bock({appName: 'a', toConsole: true, toFile: false})
+  let val, old
+  // debug
+  old = console.log
+  console.log = (v) => { val = v }
+  logger.debug(new Error('debug'))
+  assert.regex(val, /^DEBUG/)
+  console.log = old
+  // info
+  old = console.info
+  console.info = (v) => { val = v }
+  logger.info(new Error('info'))
+  assert.regex(val, /^INFO/)
+  console.info = old
+  // warn
+  old = console.warn
+  console.warn = (v) => { val = v }
+  logger.warn(new Error('warn'))
+  assert.regex(val, /^WARN/)
+  console.warn = old
+  // fatal
+  old = console.error
+  console.error = (v) => { val = v }
+  logger.fatal(new Error('fatal'))
+  assert.regex(val, /^FATAL/)
+  console.error = old
 })

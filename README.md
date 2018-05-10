@@ -10,7 +10,7 @@ $ npm install --save bock
 
 ## api
 
-Bock exports a single function which returns an object with four methods (`debug`, `info`, `warn`, `fatal`)
+Bock exports a single function which returns an object with five methods (`debug`, `info`, `warn`, `fatal`, `setLogLevel`)
 - **options** *(Object - optional)*
   - **appName** *(String - optional - default: 'bock')* Base name to use for log files (`${appName}-${month}-${day}-${year}.json`)
   - **logBase** *(String - optional - default: `__dirname + '/logs'`)* Path for log files
@@ -21,6 +21,8 @@ Bock exports a single function which returns an object with four methods (`debug
   - **whitelist** *(Array - optional)* List of ignored error types / messages
 
 Each of the four methods (`debug`, `info`, `warn`, `fatal`) accept an `Error` object or string
+
+`bock().setLogLevel(string logLevel)` Changes logLevel setting on instance
 
 ## usage
 

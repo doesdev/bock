@@ -94,4 +94,12 @@ test.serial('console output is as expected', async (assert) => {
   logger.fatal(new Error('fatal'))
   assert.regex(val, /^FATAL/)
   console.error = old
+  // change logLevel to fatal
+  logger.setLogLevel('fatal')
+  // run debug scenario, but we expect val to be unchanged from FATAL
+  old = console.log
+  console.log = (v) => { val = v }
+  logger.debug(new Error('debug'))
+  assert.regex(val, /^FATAL/)
+  console.log = old
 })

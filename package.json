@@ -1,6 +1,6 @@
 {
   "name": "bock",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Bock is a strong lager (logger) of German (US) origin",
   "engines": {
     "node": ">=6.0.0"
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/doesdev/bock#readme",
   "devDependencies": {
-    "ava": "^0.23.0"
+    "ava": "^0.25.0"
   },
   "dependencies": {
     "app-root-path": "^2.0.1",

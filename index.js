@@ -52,8 +52,12 @@ const stringer = (obj) => {
 
 // Export main function
 module.exports = (opts = {}) => {
-  let appName = opts.appName || 'bock'
   let logLevel = opts.logLevel || 'debug'
+  let setLogLevel = (ll) => {
+    logLevel = ll || opts.logLevel || 'debug'
+    if (!lvls.hasOwnProperty(logLevel)) logLevel = 'debug'
+  }
+  let appName = opts.appName || 'bock'
   if (!lvls.hasOwnProperty(logLevel)) logLevel = 'debug'
   let logBase = opts.logBase || path.join(appRoot, 'logs')
   let toConsole = boolify(opts.toConsole, true)
@@ -111,6 +115,7 @@ module.exports = (opts = {}) => {
     return (console[alias[level] || level] || console.log)(logText)
   }
   return {
+    setLogLevel,
     debug: (err) => logIt(err, 'debug'),
     info: (err) => logIt(err, 'info'),
     warn: (err) => logIt(err, 'warn'),

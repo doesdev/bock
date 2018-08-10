@@ -8,9 +8,17 @@
 $ npm install --save bock
 ```
 
+## usage
+
+```js
+const options = {appName: 'myAwesomeApp', logLevel: 'warn', toFile: true}
+const bock = require('bock')(options)
+bock.fatal(new Error('something went wrong'))
+```
+
 ## api
 
-Bock exports a single function which returns an object with five methods (`debug`, `info`, `warn`, `fatal`, `setLogLevel`)
+Bock exports a single function which returns an object with methods (`debug`, `info`, `warn`, `fatal`, `setLogLevel`, `close`)
 - **options** *(Object - optional)*
   - **appName** *(String - optional - default: 'bock')* Base name to use for log files (`${appName}-${month}-${day}-${year}.json`)
   - **logBase** *(String - optional - default: `__dirname + '/logs'`)* Path for log files
@@ -22,15 +30,11 @@ Bock exports a single function which returns an object with five methods (`debug
 
 Each of the four methods (`debug`, `info`, `warn`, `fatal`) accept an `Error` object or string
 
-`bock().setLogLevel(string logLevel)` Changes logLevel setting on instance
+Where `const logger = bock([opts])` (i.e. on an instance) the following methods are available
 
-## usage
+`logger.setLogLevel(string logLevel)` Changes logLevel setting on instance
 
-```js
-const options = {appName: 'myAwesomeApp', logLevel: 'warn', toFile: true}
-const bock = require('bock')(options)
-bock.fatal(new Error('something went wrong'))
-```
+`logger.close()` Close forked process used for file writing
 
 ## license
 

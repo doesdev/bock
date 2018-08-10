@@ -1,6 +1,6 @@
 {
   "name": "bock",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Bock is a strong lager (logger) of German (US) origin",
   "engines": {
     "node": ">=6.0.0"
@@ -11,7 +11,8 @@
     "writer.js"
   ],
   "scripts": {
-    "test": "ava --verbose"
+    "test": "ava --verbose",
+    "changelog": "auto-changelog -u -l 50 && git add CHANGELOG.md"
   },
   "repository": {
     "type": "git",
@@ -30,10 +31,11 @@
   },
   "homepage": "https://github.com/doesdev/bock#readme",
   "devDependencies": {
+    "auto-changelog": "^1.8.0",
     "ava": "^0.25.0"
   },
   "dependencies": {
-    "app-root-path": "^2.0.1",
+    "app-root-path": "^2.1.0",
     "hoy": "^1.0.1"
   }
 }

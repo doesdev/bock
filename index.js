@@ -57,6 +57,7 @@ module.exports = (opts = {}) => {
     logLevel = ll || opts.logLevel || 'debug'
     if (!lvls.hasOwnProperty(logLevel)) logLevel = 'debug'
   }
+
   let appName = opts.appName || 'bock'
   if (!lvls.hasOwnProperty(logLevel)) logLevel = 'debug'
   let logBase = opts.logBase || path.join(appRoot, 'logs')
@@ -66,20 +67,30 @@ module.exports = (opts = {}) => {
   let wl = {}
   let wlAry = Array.isArray(opts.whitelist) ? opts.whitelist : [opts.whitelist]
   wlAry.forEach((m) => { if (m) wl[m] = true })
+
   let fork, commitLogToFile
+  let newWriter = () => {
+    commitLogToFile = fork(writer)
+    // Get new fork if this one closes
+    commitLogToFile.on('close', newWriter)
+    // If it fails writing to file console log that crap
+    commitLogToFile.on('message', console.error)
+  }
   if (toFile) {
     try {
       require('fs').mkdirSync(logBase)
     } catch (e) {}
     fork = require('child_process').fork
-    commitLogToFile = fork(writer)
-    // Get new fork if this one closes
-    commitLogToFile.on('close', () => {
-      commitLogToFile = fork(writer)
-    })
-    // If it fails writing to file console log that crap
-    commitLogToFile.on('message', console.error)
+    newWriter()
   }
+
+  let close = () => {
+    if (!commitLogToFile || !commitLogToFile.connected()) return
+    commitLogToFile.off('message', console.error)
+    commitLogToFile.off('close', newWriter)
+    commitLogToFile.kill()
+  }
+
   let logIt = (err = new Error(), level = 'warn') => {
     if ((lvls[level] || 0) < (lvls[logLevel] || 0)) return
     let name = err.name || err.toString()
@@ -114,7 +125,9 @@ module.exports = (opts = {}) => {
     let alias = {debug: 'log', fatal: 'error'}
     return (console[alias[level] || level] || console.log)(logText)
   }
+
   return {
+    close,
     setLogLevel,
     debug: (err) => logIt(err, 'debug'),
     info: (err) => logIt(err, 'info'),

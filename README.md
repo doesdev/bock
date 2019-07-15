@@ -11,7 +11,7 @@ $ npm install --save bock
 ## usage
 
 ```js
-const options = {appName: 'myAwesomeApp', logLevel: 'warn', toFile: true}
+const options = { appName: 'myAwesomeApp', logLevel: 'warn', toFile: true }
 const bock = require('bock')(options)
 bock.fatal(new Error('something went wrong'))
 ```

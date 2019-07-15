@@ -91,8 +91,11 @@ module.exports = (opts = {}) => {
   const close = () => {
     if (!(commitLogToFile && commitLogToFile.connected)) return
 
-    commitLogToFile.off('message', console.error)
-    commitLogToFile.off('close', newWriter)
+    if (commitLogToFile.off) {
+      commitLogToFile.off('message', console.error)
+      commitLogToFile.off('close', newWriter)
+    }
+
     commitLogToFile.kill()
   }
 

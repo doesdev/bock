@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. Dates are d
 - Simplify devDependencies
 - Fix standard issues
 - Add Travis config
+- Fix a couple `close` issues
 
 #### [2.1.3](https://github.com/doesdev/bock/compare/2.1.2...2.1.3)
 

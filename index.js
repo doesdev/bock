@@ -54,12 +54,12 @@ module.exports = (opts = {}) => {
 
   const setLogLevel = (ll) => {
     logLevel = ll || opts.logLevel || 'debug'
-    if (!lvls.hasOwnProperty(logLevel)) logLevel = 'debug'
+    if (!Object.hasOwnProperty.call(lvls, logLevel)) logLevel = 'debug'
   }
 
   const appName = opts.appName || 'bock'
 
-  if (!lvls.hasOwnProperty(logLevel)) logLevel = 'debug'
+  if (!Object.hasOwnProperty.call(lvls, logLevel)) logLevel = 'debug'
 
   const logBase = opts.logBase || path.join(appRoot, 'logs')
   const toConsole = boolify(opts.toConsole, true)
@@ -93,7 +93,7 @@ module.exports = (opts = {}) => {
 
     commitLogToFile.removeListener('message', console.error)
     commitLogToFile.removeListener('close', newWriter)
-    commitLogToFile.kill()
+    commitLogToFile.disconnect()
   }
 
   const logIt = (err = new Error(), level = 'warn') => {
@@ -128,7 +128,7 @@ module.exports = (opts = {}) => {
     })
 
     if (toFile) {
-      let logFilePath = path.join(logBase, `${appName}-${today()}.json`)
+      const logFilePath = path.join(logBase, `${appName}-${today()}.json`)
       try {
         commitLogToFile.send({ logFilePath, log: stringer(log), newline })
       } catch (e) {

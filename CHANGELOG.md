@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [2.2.0](https://github.com/doesdev/bock/compare/2.1.4...2.2.0)
+
+> 30 December 2019
+
+- On `.close` disconnect child rather than kill, fixes #9
+- Update `app-root-path` dep
+- Fix standard style issues
+
 #### [2.1.4](https://github.com/doesdev/bock/compare/2.1.3...2.1.4)
 
 > 14 July 2019

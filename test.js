@@ -22,7 +22,7 @@ const delay = async (d = 500) => {
 
 const clear = (logger) => {
   try {
-    let logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
+    const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
     fs.unlinkSync(logFile)
     fs.rmdirSync(opts.logBase)
   } catch (ex) {}
@@ -31,7 +31,7 @@ const clear = (logger) => {
 }
 
 test('proper JSON array', async (assert) => {
-  let logger = bock(opts)
+  const logger = bock(opts)
 
   logger.debug(new Error('debug'))
   logger.info(new Error('info'))
@@ -40,8 +40,8 @@ test('proper JSON array', async (assert) => {
 
   await delay(500)
 
-  let logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
-  let log = require(logFile)
+  const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
+  const log = require(logFile)
 
   assert.is(log[0].level, 'debug')
   assert.is(log[1].level, 'info')
@@ -52,7 +52,7 @@ test('proper JSON array', async (assert) => {
 })
 
 test('newline delimited JSON', async (assert) => {
-  let logger = bock(Object.assign({}, opts, { newline: true }))
+  const logger = bock(Object.assign({}, opts, { newline: true }))
 
   logger.debug(new Error('debug'))
   logger.info(new Error('info'))
@@ -61,9 +61,9 @@ test('newline delimited JSON', async (assert) => {
 
   await delay(500)
 
-  let logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
-  let nld = fs.readFileSync(logFile, 'utf8').trim().split('\n').join(',')
-  let log = JSON.parse(`[${nld}]`)
+  const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
+  const nld = fs.readFileSync(logFile, 'utf8').trim().split('\n').join(',')
+  const log = JSON.parse(`[${nld}]`)
 
   assert.is(log[0].level, 'debug')
   assert.is(log[1].level, 'info')
@@ -74,9 +74,9 @@ test('newline delimited JSON', async (assert) => {
 })
 
 test('circular reference', async (assert) => {
-  let logger = bock(opts)
-  let err = new Error('debug')
-  let meta = { error: err }
+  const logger = bock(opts)
+  const err = new Error('debug')
+  const meta = { error: err }
 
   err.meta = meta
 
@@ -88,7 +88,7 @@ test('circular reference', async (assert) => {
 })
 
 test('console output is as expected', async (assert) => {
-  let logger = bock({ appName: 'a', toConsole: true, toFile: false })
+  const logger = bock({ appName: 'a', toConsole: true, toFile: false })
   let val, old
 
   // debug

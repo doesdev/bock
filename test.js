@@ -4,16 +4,16 @@ const test = require('mvt')
 const fs = require('fs')
 const path = require('path')
 const bock = require('./index')
-const opts = {
+const getOpts = (override = {}) => Object.assign({}, {
   appName: 'bocktest',
   logBase: path.join(__dirname, '_logs'),
   logLevel: 'debug',
   toConsole: false,
   newline: false
-}
+}, override)
 
 try {
-  fs.rmdirSync(opts.logBase)
+  fs.rmdirSync(getOpts().logBase)
 } catch (ex) {}
 
 const delay = async (d = 500) => {
@@ -22,6 +22,7 @@ const delay = async (d = 500) => {
 
 const clear = (logger) => {
   try {
+    const opts = getOpts()
     const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
     fs.unlinkSync(logFile)
     fs.rmdirSync(opts.logBase)
@@ -31,6 +32,7 @@ const clear = (logger) => {
 }
 
 test('proper JSON array', async (assert) => {
+  const opts = getOpts({ appName: 'json-array' })
   const logger = bock(opts)
 
   logger.debug(new Error('debug'))
@@ -52,7 +54,8 @@ test('proper JSON array', async (assert) => {
 })
 
 test('newline delimited JSON', async (assert) => {
-  const logger = bock(Object.assign({}, opts, { newline: true }))
+  const opts = getOpts({ appName: 'newline', newline: true })
+  const logger = bock(opts)
 
   logger.debug(new Error('debug'))
   logger.info(new Error('info'))
@@ -74,6 +77,7 @@ test('newline delimited JSON', async (assert) => {
 })
 
 test('circular reference', async (assert) => {
+  const opts = getOpts({ appName: 'circular' })
   const logger = bock(opts)
   const err = new Error('debug')
   const meta = { error: err }
@@ -130,4 +134,47 @@ test('console output is as expected', async (assert) => {
   console.log = old
 
   clear(logger)
+})
+
+test('function as error', async (assert) => {
+  const opts = getOpts({ appName: 'function' })
+  const logger = bock(opts)
+
+  logger.fatal(() => new Error('fatal'))
+
+  await delay(500)
+
+  const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
+  const log = require(logFile)
+
+  assert.is(log[0].level, 'fatal')
+
+  clear(logger)
+})
+
+test('whitelist', async (assert) => {
+  const opts = getOpts({ appName: 'whitelist', whitelist: ['info'] })
+  const logger = bock(opts)
+
+  logger.debug(new Error('debug'))
+  logger.info(new Error('info'))
+  logger.warn(new Error('warn'))
+  logger.fatal(new Error('fatal'))
+
+  await delay(500)
+
+  const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
+  const log = require(logFile)
+
+  assert.is(log[0].level, 'debug')
+  assert.is(log[1].level, 'warn')
+  assert.is(log[2].level, 'fatal')
+
+  clear(logger)
+})
+
+test('cached returns last instance', async (assert) => {
+  const loggerInit = bock(getOpts({ appName: 'cached' }))
+  const loggerCached = bock.cached()
+  assert.is(loggerInit, loggerCached)
 })

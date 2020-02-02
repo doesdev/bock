@@ -18,7 +18,8 @@ bock.fatal(new Error('something went wrong'))
 
 ## api
 
-Bock exports a single function which returns an object with methods (`debug`, `info`, `warn`, `fatal`, `setLogLevel`, `close`)
+Bock exports a primary function which returns an instance with methods
+(`debug`, `info`, `warn`, `fatal`, `setLogLevel`, `close`)
 - **options** *(Object - optional)*
   - **appName** *(String - optional - default: 'bock')* Base name to use for log files (`${appName}-${month}-${day}-${year}.json`)
   - **logBase** *(String - optional - default: `__dirname + '/logs'`)* Path for log files
@@ -28,13 +29,18 @@ Bock exports a single function which returns an object with methods (`debug`, `i
   - **toFile** *(Boolean - optional - default: true)* Should log to file
   - **whitelist** *(Array - optional)* List of ignored error types / messages
 
-Each of the four methods (`debug`, `info`, `warn`, `fatal`) accept an `Error` object or string
+Each of the four methods (`debug`, `info`, `warn`, `fatal`) accept an `Error`
+object, a string, or a function that returns one of those two things.
 
-Where `const logger = bock([opts])` (i.e. on an instance) the following methods are available
+Where `const logger = bock([opts])` (i.e. on an instance) the following methods
+are also available
 
 `logger.setLogLevel(string logLevel)` Changes logLevel setting on instance
 
 `logger.close()` Close forked process used for file writing
+
+Additionally, you can choose to use the `bock.cached([opts])` which will return
+the last instance instantiated or create a new one with the passed opts.
 
 ## license
 

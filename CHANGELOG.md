@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [3.0.0](https://github.com/doesdev/bock/compare/2.2.0...3.0.0)
+
+> 1 February 2020
+
+- Rewrite OO-esque for no good reason and bunch of other pointless garbage
+- Allow functions as message
+- Add cached getter
+
 #### [2.2.0](https://github.com/doesdev/bock/compare/2.1.4...2.2.0)
 
 > 30 December 2019

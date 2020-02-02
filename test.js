@@ -177,4 +177,38 @@ test('cached returns last instance', async (assert) => {
   const loggerInit = bock.cached(getOpts({ appName: 'cached' }))
   const loggerCached = bock.cached()
   assert.is(loggerInit, loggerCached)
+  loggerCached.close()
+})
+
+test('cached re-inits if cached needs opts', async (assert) => {
+  const loggerNeedsOpts = bock.cached()
+  const loggerReInit = bock.cached(getOpts({ appName: 'cache-reinit' }))
+  const loggerCached = bock.cached()
+  assert.not(loggerNeedsOpts, loggerReInit)
+  assert.not(loggerNeedsOpts, loggerCached)
+  assert.is(loggerReInit, loggerCached)
+  loggerCached.close()
+})
+
+test('can destructure', async (assert) => {
+  const opts = getOpts({ appName: 'destructure' })
+  const logger = bock(opts)
+  const { debug, info, warn, fatal } = logger
+
+  debug(new Error('debug'))
+  info(new Error('info'))
+  warn(new Error('warn'))
+  fatal(new Error('fatal'))
+
+  await delay(500)
+
+  const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
+  const log = require(logFile)
+
+  assert.is(log[0].level, 'debug')
+  assert.is(log[1].level, 'info')
+  assert.is(log[2].level, 'warn')
+  assert.is(log[3].level, 'fatal')
+
+  clear(logger)
 })

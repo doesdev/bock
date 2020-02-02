@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [3.0.2](https://github.com/doesdev/bock/compare/3.0.1...3.0.2)
+
+> 1 February 2020
+
+- Retain functionality but don't use OO style
+- Fixes inability to use destructured
+- Make `cached` more intelligent
+
 #### [3.0.1](https://github.com/doesdev/bock/compare/3.0.0...3.0.1)
 
 > 1 February 2020

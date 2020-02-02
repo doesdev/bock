@@ -1,16 +1,17 @@
 'use strict'
 
-// Setup
 const fs = require('fs')
 const maxAttempts = 10
 
-// helpers
+const prepMsg = (data, msgType, msg) => `${data.id}|${msgType}|${msg || 'done'}`
+
 const writeIt = (data, attempts) => {
   try {
     fs.appendFileSync(data.logFilePath, `${data.log}\n`)
+    if (data.id) process.send(prepMsg(data, 'done'))
   } catch (e) {
     if (attempts < maxAttempts) return writeIt(data, attempts + 1)
-    process.send(e)
+    process.send(data.id ? prepMsg(data, 'error', e) : e)
   }
 }
 
@@ -23,9 +24,10 @@ const writeItAsAry = (data, attempts) => {
   logs.push(JSON.parse(data.log))
   try {
     fs.writeFileSync(data.logFilePath, JSON.stringify(logs))
+    if (data.id) process.send(prepMsg(data, 'done'))
   } catch (e) {
     if (attempts < maxAttempts) return writeItAsAry(data, attempts + 1)
-    process.send(e)
+    process.send(data.id ? prepMsg(data, 'error', e) : e)
   }
 }
 

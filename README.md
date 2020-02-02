@@ -1,4 +1,4 @@
-# bock [![NPM version](https://badge.fury.io/js/bock.svg)](https://npmjs.org/package/bock)   [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)   [![Dependency Status](https://dependencyci.com/github/doesdev/bock/badge)](https://dependencyci.com/github/doesdev/bock)   [![Build Status](https://travis-ci.com/doesdev/bock.svg)](https://travis-ci.com/doesdev/bock)
+# bock [![NPM version](https://badge.fury.io/js/bock.svg)](https://npmjs.org/package/bock)   [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)   [![Build Status](https://travis-ci.com/doesdev/bock.svg)](https://travis-ci.com/doesdev/bock)
 
 > Bock is a strong ~~lager~~ logger of ~~German~~ US origin
 
@@ -28,6 +28,8 @@ Bock exports a primary function which returns an instance with methods
   - **toConsole** *(Boolean - optional - default: true)* Should log to console
   - **toFile** *(Boolean - optional - default: true)* Should log to file
   - **whitelist** *(Array - optional)* List of ignored error types / messages
+  - **track** *(Boolean - optional - default: false)* Should log methods return
+  a `Promise` indicating the log was written
 
 Each of the four methods (`debug`, `info`, `warn`, `fatal`) accept an `Error`
 object, a string, or a function that returns one of those two things.

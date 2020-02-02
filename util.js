@@ -2,7 +2,6 @@
 
 const path = require('path')
 const hoy = require('hoy')
-const writer = path.join(__dirname, 'writer.js')
 const appRoot = require('app-root-path').toString()
 
 const lvlsInt = { debug: 0, info: 1, warn: 2, fatal: 3 }
@@ -25,23 +24,51 @@ const kNewline = Symbol('newline')
 const kToConsole = Symbol('toConsole')
 const kToFile = Symbol('toFile')
 const kWhitelist = Symbol('whitelist')
+const kTrack = Symbol('track')
 
 // globals
+const completionCallbacks = {}
 let commitLogToFile
 
-const newWriter = (toWrite) => {
-  if (commitLogToFile && commitLogToFile.connected) return commitLogToFile
+const fireCallbackIfNeeded = (id) => {
+  const capturedCb = completionCallbacks[id]
+  if (!capturedCb) return
+  delete completionCallbacks[id]
+  capturedCb()
+}
 
-  const fork = require('child_process').fork
-  commitLogToFile = fork(writer)
-  // Get new fork if this one closes
-  commitLogToFile.on('close', newWriter)
-  // If it fails writing to file console log that crap
-  commitLogToFile.on('message', console.error)
+const writer = (toWrite, cb) => {
+  if (!commitLogToFile || !commitLogToFile.connected) {
+    const fork = require('child_process').fork
+    const writerWorker = path.join(__dirname, 'writer.js')
 
-  if (toWrite) commitLogToFile.send(toWrite)
+    if (commitLogToFile && commitLogToFile.removeAllListeners) {
+      commitLogToFile.removeAllListeners('close')
+      commitLogToFile.removeAllListeners('message')
+      if (commitLogToFile.kill) try { commitLogToFile.kill() } catch (ex) {}
+      if (commitLogToFile.unfref) try { commitLogToFile.unfref() } catch (ex) {}
+    }
 
-  return commitLogToFile
+    commitLogToFile = fork(writerWorker)
+    commitLogToFile.on('close', () => writer())
+    commitLogToFile.on('message', (msg) => {
+      const msgTypes = { error: true, done: true }
+      const [id, msgType, ...body] = msg.split('|')
+      if (!msgTypes[msgType]) return console.error(new Error(msg))
+      if (msgType === 'error') console.error(new Error(body.join('|')))
+      fireCallbackIfNeeded(id)
+    })
+  }
+
+  if (!toWrite) return
+
+  if (cb) {
+    const id = toWrite.id = `${Date.now()}-${randar()}`
+    completionCallbacks[id] = cb
+    setTimeout(() => fireCallbackIfNeeded(id), 30000)
+  }
+
+  commitLogToFile.send(toWrite)
 }
 
 const today = () => {
@@ -85,7 +112,8 @@ const mapWhiteList = (wl) => {
 }
 
 const logIt = (err = new Error(), level = 'warn', instance) => {
-  if (lvlsInt[level] < instance[kLogLevel]) return
+  const toReturn = instance[kTrack] ? Promise.resolve() : null
+  if (lvlsInt[level] < instance[kLogLevel]) return toReturn
 
   if (typeof err === 'function') err = err()
 
@@ -96,7 +124,7 @@ const logIt = (err = new Error(), level = 'warn', instance) => {
   const name = err.name || err.toString()
   const whitelist = instance[kWhitelist]
 
-  if (whitelist.has(name) || whitelist.has(err.message)) return
+  if (whitelist.has(name) || whitelist.has(err.message)) return toReturn
 
   const log = {}
   log.time = Date.now()
@@ -122,28 +150,32 @@ const logIt = (err = new Error(), level = 'warn', instance) => {
     logText += `\n  ${initCap(k)}: ${val}`
   })
 
+  if (toConsole) {
+    const alias = { debug: 'log', fatal: 'error' }
+    const logFunc = console[alias[level] || level] || console.log
+    logFunc(logText)
+  }
+
   if (toFile) {
     const logBase = instance[kLogBase]
     const logFilePath = path.join(logBase, `${appName}-${today()}.json`)
-    const toWrite = { logFilePath, log: stringer(log), newline }
-    try {
-      commitLogToFile.send(toWrite)
-    } catch (e) {
-      newWriter(toWrite)
+
+    if (instance[kTrack]) {
+      return new Promise((resolve, reject) => {
+        writer({ logFilePath, log: stringer(log), newline }, () => resolve())
+      })
     }
+
+    writer({ logFilePath, log: stringer(log), newline })
   }
 
-  if (!toConsole) return
-
-  const alias = { debug: 'log', fatal: 'error' }
-
-  return (console[alias[level] || level] || console.log)(logText)
+  return toReturn
 }
 
 const closeForked = () => {
   if (!(commitLogToFile && commitLogToFile.connected)) return
   commitLogToFile.removeListener('message', console.error)
-  commitLogToFile.removeListener('close', newWriter)
+  commitLogToFile.removeListener('close', writer)
   commitLogToFile.disconnect()
 }
 
@@ -151,7 +183,7 @@ module.exports = {
   lvlsInt,
   lvlsTxt,
   defaultBase,
-  newWriter,
+  writer,
   randar,
   kId,
   kAppName,
@@ -161,6 +193,7 @@ module.exports = {
   kToConsole,
   kToFile,
   kWhitelist,
+  kTrack,
   mapWhiteList,
   logIt,
   closeForked

@@ -4,7 +4,7 @@ const {
   lvlsInt,
   lvlsTxt,
   defaultBase,
-  newWriter,
+  writer,
   randar,
   kId,
   kAppName,
@@ -14,6 +14,7 @@ const {
   kToConsole,
   kToFile,
   kWhitelist,
+  kTrack,
   mapWhiteList,
   logIt,
   closeForked
@@ -33,14 +34,15 @@ const bock = (id, opts) => {
     [kNewline]: opts.newline !== false,
     [kToConsole]: opts.toConsole !== false,
     [kToFile]: opts.toFile !== false,
-    [kWhitelist]: mapWhiteList(opts.whitelist)
+    [kWhitelist]: mapWhiteList(opts.whitelist),
+    [kTrack]: opts.track === true
   }
 
   if (instOpts[kToFile]) {
     try {
       require('fs').mkdirSync(instOpts[kLogBase])
     } catch (e) {}
-    newWriter()
+    writer()
   }
 
   const bockInstance = {
@@ -52,10 +54,10 @@ const bock = (id, opts) => {
       instOpts[kLogLevel] = logLevel
     },
     setLogLevel (logLevel) { bockInstance.logLevel = logLevel },
-    debug (err) { logIt(err, 'debug', instOpts) },
-    info (err) { logIt(err, 'info', instOpts) },
-    warn (err) { logIt(err, 'warn', instOpts) },
-    fatal (err) { logIt(err, 'fatal', instOpts) },
+    debug: (err) => logIt(err, 'debug', instOpts),
+    info: (err) => logIt(err, 'info', instOpts),
+    warn: (err) => logIt(err, 'warn', instOpts),
+    fatal: (err) => logIt(err, 'fatal', instOpts),
     close () {
       delete instances[id]
       if (cached && cached[kId] === id) cached = undefined

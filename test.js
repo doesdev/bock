@@ -9,38 +9,33 @@ const getOpts = (override = {}) => Object.assign({}, {
   logBase: path.join(__dirname, '_logs'),
   logLevel: 'debug',
   toConsole: false,
-  newline: false
+  newline: false,
+  track: true
 }, override)
 
-try {
-  fs.rmdirSync(getOpts().logBase)
-} catch (ex) {}
-
-const delay = async (d = 500) => {
-  await new Promise((resolve, reject) => setTimeout(resolve, d))
-}
-
-const clear = (logger) => {
+const clearAll = (logger, clearDir) => {
+  const logBase = getOpts().logBase
   try {
-    const opts = getOpts()
-    const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
-    fs.unlinkSync(logFile)
-    fs.rmdirSync(opts.logBase)
+    const logFiles = fs.readdirSync(logBase).map((f) => path.join(logBase, f))
+    logFiles.forEach((f) => { try { fs.unlinkSync(f) } catch (ex) {} })
+    if (clearDir) fs.rmdirSync(getOpts().logBase)
   } catch (ex) {}
 
   if (logger) logger.close()
 }
 
+test.before(() => clearAll(null, true))
+
+test.after(() => clearAll(null, true))
+
 test('proper JSON array', async (assert) => {
   const opts = getOpts({ appName: 'json-array' })
   const logger = bock(opts)
 
-  logger.debug(new Error('debug'))
-  logger.info(new Error('info'))
-  logger.warn(new Error('warn'))
-  logger.fatal(new Error('fatal'))
-
-  await delay(500)
+  await logger.debug(new Error('debug'))
+  await logger.info(new Error('info'))
+  await logger.warn(new Error('warn'))
+  await logger.fatal(new Error('fatal'))
 
   const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
   const log = require(logFile)
@@ -50,19 +45,17 @@ test('proper JSON array', async (assert) => {
   assert.is(log[2].level, 'warn')
   assert.is(log[3].level, 'fatal')
 
-  clear(logger)
+  clearAll(logger)
 })
 
 test('newline delimited JSON', async (assert) => {
   const opts = getOpts({ appName: 'newline', newline: true })
   const logger = bock(opts)
 
-  logger.debug(new Error('debug'))
-  logger.info(new Error('info'))
-  logger.warn(new Error('warn'))
-  logger.fatal(new Error('fatal'))
-
-  await delay(500)
+  await logger.debug(new Error('debug'))
+  await logger.info(new Error('info'))
+  await logger.warn(new Error('warn'))
+  await logger.fatal(new Error('fatal'))
 
   const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
   const nld = fs.readFileSync(logFile, 'utf8').trim().split('\n').join(',')
@@ -73,7 +66,7 @@ test('newline delimited JSON', async (assert) => {
   assert.is(log[2].level, 'warn')
   assert.is(log[3].level, 'fatal')
 
-  clear(logger)
+  clearAll(logger)
 })
 
 test('circular reference', async (assert) => {
@@ -86,9 +79,7 @@ test('circular reference', async (assert) => {
 
   assert.notThrows(() => logger.debug(err))
 
-  await delay(500)
-
-  clear(logger)
+  clearAll(logger)
 })
 
 test('console output is as expected', async (assert) => {
@@ -133,35 +124,31 @@ test('console output is as expected', async (assert) => {
   assert.truthy(val.match(/^FATAL/))
   console.log = old
 
-  clear(logger)
+  clearAll(logger)
 })
 
 test('function as error', async (assert) => {
   const opts = getOpts({ appName: 'function' })
   const logger = bock(opts)
 
-  logger.fatal(() => new Error('fatal'))
-
-  await delay(500)
+  await logger.fatal(() => new Error('fatal'))
 
   const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
   const log = require(logFile)
 
   assert.is(log[0].level, 'fatal')
 
-  clear(logger)
+  clearAll(logger)
 })
 
 test('whitelist', async (assert) => {
   const opts = getOpts({ appName: 'whitelist', whitelist: ['info'] })
   const logger = bock(opts)
 
-  logger.debug(new Error('debug'))
-  logger.info(new Error('info'))
-  logger.warn(new Error('warn'))
-  logger.fatal(new Error('fatal'))
-
-  await delay(500)
+  await logger.debug(new Error('debug'))
+  await logger.info(new Error('info'))
+  await logger.warn(new Error('warn'))
+  await logger.fatal(new Error('fatal'))
 
   const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
   const log = require(logFile)
@@ -170,7 +157,7 @@ test('whitelist', async (assert) => {
   assert.is(log[1].level, 'warn')
   assert.is(log[2].level, 'fatal')
 
-  clear(logger)
+  clearAll(logger)
 })
 
 test('cached returns last instance', async (assert) => {
@@ -195,12 +182,10 @@ test('can destructure', async (assert) => {
   const logger = bock(opts)
   const { debug, info, warn, fatal } = logger
 
-  debug(new Error('debug'))
-  info(new Error('info'))
-  warn(new Error('warn'))
-  fatal(new Error('fatal'))
-
-  await delay(500)
+  await debug(new Error('debug'))
+  await info(new Error('info'))
+  await warn(new Error('warn'))
+  await fatal(new Error('fatal'))
 
   const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
   const log = require(logFile)
@@ -210,5 +195,68 @@ test('can destructure', async (assert) => {
   assert.is(log[2].level, 'warn')
   assert.is(log[3].level, 'fatal')
 
-  clear(logger)
+  clearAll(logger)
+})
+
+test('methods return promise with track = true', async (assert) => {
+  const logger = bock(getOpts({ appName: 'track-true', track: true }))
+  assert.true(logger.debug('debug') instanceof Promise)
+
+  clearAll(logger)
+})
+
+test('methods return null with track = false', async (assert) => {
+  const logger = bock(getOpts({ appName: 'track-false', track: false }))
+  assert.is(logger.debug('debug'), null)
+
+  clearAll(logger)
+})
+
+test('stress test with newline = false', async (assert) => {
+  const opts = getOpts({ appName: 'stress-array', track: true })
+  const logger = bock(opts)
+  const runs = 1000
+  const start = Date.now()
+
+  await Promise.all([...Array(runs)].map((_, i) => {
+    return logger.debug(new Error(`debug: ${i}`))
+  }))
+
+  const fin = Date.now()
+  const ranFor = fin - start
+
+  const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
+  const log = require(logFile)
+
+  assert.is(log.length, runs)
+  assert.true(ranFor < 30000)
+
+  console.log(`Stress-Array: ${runs} log entries committed in ${ranFor}ms`)
+
+  clearAll(logger)
+})
+
+test('stress test with newline = true', async (assert) => {
+  const opts = getOpts({ appName: 'stress-newline', track: true, newline: true })
+  const logger = bock(opts)
+  const runs = 1000
+  const start = Date.now()
+
+  await Promise.all([...Array(runs)].map((_, i) => {
+    return logger.debug(new Error(`debug: ${i}`))
+  }))
+
+  const fin = Date.now()
+  const ranFor = fin - start
+
+  const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
+  const nld = fs.readFileSync(logFile, 'utf8').trim().split('\n').join(',')
+  const log = JSON.parse(`[${nld}]`)
+
+  assert.is(log.length, runs)
+  assert.true(ranFor < 10000)
+
+  console.log(`Stress-Newline: ${runs} log entries committed in ${ranFor}ms`)
+
+  clearAll(logger)
 })

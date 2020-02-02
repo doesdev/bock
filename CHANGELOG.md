@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [3.0.3](https://github.com/doesdev/bock/compare/3.0.2...3.0.3)
+
+> 2 February 2020
+
+- Add `track` option, allowing for awaiting log writing (for tests mainly)
+
 #### [3.0.2](https://github.com/doesdev/bock/compare/3.0.1...3.0.2)
 
 > 1 February 2020

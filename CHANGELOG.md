@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [3.0.1](https://github.com/doesdev/bock/compare/3.0.0...3.0.1)
+
+> 1 February 2020
+
+- Only cache an instance created with `cached`
+
 #### [3.0.0](https://github.com/doesdev/bock/compare/2.2.0...3.0.0)
 
 > 1 February 2020

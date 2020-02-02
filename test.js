@@ -174,7 +174,7 @@ test('whitelist', async (assert) => {
 })
 
 test('cached returns last instance', async (assert) => {
-  const loggerInit = bock(getOpts({ appName: 'cached' }))
+  const loggerInit = bock.cached(getOpts({ appName: 'cached' }))
   const loggerCached = bock.cached()
   assert.is(loggerInit, loggerCached)
 })

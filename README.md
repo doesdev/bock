@@ -40,7 +40,8 @@ are also available
 `logger.close()` Close forked process used for file writing
 
 Additionally, you can choose to use the `bock.cached([opts])` which will return
-the last instance instantiated or create a new one with the passed opts.
+the last instance instantiated using the `cached` method or create a new one
+with the passed opts (and cache it).
 
 ## license
 

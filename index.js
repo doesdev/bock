@@ -68,10 +68,11 @@ class Bock {
 
 const newBock = (opts = {}) => {
   const id = (opts.appName = opts.appName || 'bock') + Date.now() + randar()
-  cached = instances[id] = new Bock(id, opts)
-  return cached
+  return (instances[id] = new Bock(id, opts))
 }
 
 module.exports = newBock
 
-module.exports.cached = (opts) => cached || newBock(opts)
+module.exports.cached = (opts) => {
+  return (cached = cached || newBock(opts))
+}

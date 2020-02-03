@@ -2,7 +2,6 @@
 
 const {
   lvlsInt,
-  lvlsTxt,
   defaultBase,
   writer,
   randar,
@@ -30,7 +29,7 @@ const bock = (id, opts) => {
   const instOpts = {
     [kAppName]: opts.appName || 'bock',
     [kLogBase]: opts.logBase || defaultBase,
-    [kLogLevel]: lvlsInt[opts.logLevel] || lvlsInt.debug,
+    [kLogLevel]: lvlsInt[opts.logLevel] ? opts.logLevel : 'debug',
     [kNewline]: opts.newline !== false,
     [kToConsole]: opts.toConsole !== false,
     [kToFile]: opts.toFile !== false,
@@ -48,10 +47,9 @@ const bock = (id, opts) => {
   const bockInstance = {
     [kId]: id,
     get appName () { return instOpts[kAppName] },
-    get logLevel () { return lvlsTxt[instOpts[kLogLevel]] },
-    set logLevel (logLevel) {
-      logLevel = lvlsInt[logLevel] || instOpts[kLogLevel] || lvlsInt.debug
-      instOpts[kLogLevel] = logLevel
+    get logLevel () { return instOpts[kLogLevel] },
+    set logLevel (ll) {
+      instOpts[kLogLevel] = lvlsInt[ll] ? ll : instOpts[kLogLevel] || 'debug'
     },
     setLogLevel (logLevel) { bockInstance.logLevel = logLevel },
     debug: (err) => logIt(err, 'debug', instOpts),

@@ -4,8 +4,7 @@ const path = require('path')
 const hoy = require('hoy')
 const appRoot = require('app-root-path').toString()
 
-const lvlsInt = { debug: 0, info: 1, warn: 2, fatal: 3 }
-const lvlsTxt = Object.fromEntries(Object.keys(lvlsInt).map((v, i) => [i, v]))
+const lvlsInt = { debug: 1, info: 2, warn: 3, fatal: 4 }
 const defaultBase = path.join(appRoot, 'logs')
 const errProps = [
   'name',
@@ -113,7 +112,7 @@ const mapWhiteList = (wl) => {
 
 const logIt = (err = new Error(), level = 'warn', instance) => {
   const toReturn = instance[kTrack] ? Promise.resolve() : null
-  if (lvlsInt[level] < instance[kLogLevel]) return toReturn
+  if (lvlsInt[level] < lvlsInt[instance[kLogLevel]]) return toReturn
 
   if (typeof err === 'function') err = err()
 
@@ -181,7 +180,6 @@ const closeForked = () => {
 
 module.exports = {
   lvlsInt,
-  lvlsTxt,
   defaultBase,
   writer,
   randar,

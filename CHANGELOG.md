@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [3.0.4](https://github.com/doesdev/bock/compare/3.0.3...3.0.4)
+
+> 3 February 2020
+
+- Store logLevel as text rather than int
+
 #### [3.0.3](https://github.com/doesdev/bock/compare/3.0.2...3.0.3)
 
 > 2 February 2020

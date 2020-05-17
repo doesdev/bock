@@ -239,11 +239,11 @@ test('stress test with newline = false', async (assert) => {
 test('stress test with newline = true', async (assert) => {
   const opts = getOpts({ appName: 'stress-newline', track: true, newline: true })
   const logger = bock(opts)
-  const runs = 1000
+  const runs = 5000
   const start = Date.now()
 
   await Promise.all([...Array(runs)].map((_, i) => {
-    return logger.debug(new Error(`debug: ${i}`))
+    return logger.debug(new Error(`debug: ${i + 1}`))
   }))
 
   const fin = Date.now()
@@ -254,6 +254,7 @@ test('stress test with newline = true', async (assert) => {
   const log = JSON.parse(`[${nld}]`)
 
   assert.is(log.length, runs)
+  assert.is(log[log.length - 1].message, `debug: ${runs}`)
   assert.true(ranFor < 10000)
 
   console.log(`Stress-Newline: ${runs} log entries committed in ${ranFor}ms`)

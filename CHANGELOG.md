@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [4.0.0](https://github.com/doesdev/bock/compare/3.0.4...4.0.0)
+
+> 16 May 2020
+
+- Use streams for writing instead of appendFileSync
+- Update Node Engine to >= 8.0.0
+
 #### [3.0.4](https://github.com/doesdev/bock/compare/3.0.3...3.0.4)
 
 > 3 February 2020

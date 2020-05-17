@@ -2,12 +2,27 @@
 
 const fs = require('fs')
 const maxAttempts = 10
-
 const prepMsg = (data, msgType, msg) => `${data.id}|${msgType}|${msg || 'done'}`
+const queue = []
+const stream = {}
 
-const writeIt = (data, attempts) => {
+const write = () => new Promise((resolve, reject) => {
+  const { log, logFilePath: fPath } = queue.shift() || {}
+  if (!(log && fPath)) return resolve()
+
+  if (stream.path !== fPath) {
+    if (stream.active && stream.active.writable) stream.active.end()
+    stream.active = fs.createWriteStream(fPath, { flags: 'a' })
+    stream.path = fPath
+  }
+
+  stream.active.write(`${log}\n`, () => resolve())
+})
+
+const writeIt = async (data, attempts) => {
   try {
-    fs.appendFileSync(data.logFilePath, `${data.log}\n`)
+    queue.push(data)
+    await write()
     if (data.id) process.send(prepMsg(data, 'done'))
   } catch (e) {
     if (attempts < maxAttempts) return writeIt(data, attempts + 1)
@@ -31,5 +46,4 @@ const writeItAsAry = (data, attempts) => {
   }
 }
 
-// main
 process.on('message', (d) => d.newline ? writeIt(d, 0) : writeItAsAry(d, 0))

@@ -1,9 +1,9 @@
 {
   "name": "bock",
-  "version": "3.0.4",
+  "version": "4.0.0",
   "description": "Bock is a strong lager (logger) of German (US) origin",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=8.0.0"
   },
   "main": "index.js",
   "files": [
@@ -31,7 +31,7 @@
   },
   "homepage": "http://bock.doesdev.com",
   "devDependencies": {
-    "mvt": "^4.0.0"
+    "mvt": "^4.1.0"
   },
   "dependencies": {
     "app-root-path": "^3.0.0",

@@ -48,7 +48,7 @@ const writer = (toWrite, cb) => {
       if (commitLogToFile.unfref) try { commitLogToFile.unfref() } catch (ex) {}
     }
 
-    commitLogToFile = fork(writerWorker)
+    commitLogToFile = fork(writerWorker, { execArgv: [] })
     commitLogToFile.on('close', () => writer())
     commitLogToFile.on('message', (msg) => {
       const msgTypes = { error: true, done: true }

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [4.0.1](https://github.com/doesdev/bock/compare/4.0.0...4.0.1)
+
+> 12 November 2020
+
+- Pass empty execArgv to fork to prevent passing unwanted args down
+
 #### [4.0.0](https://github.com/doesdev/bock/compare/3.0.4...4.0.0)
 
 > 16 May 2020

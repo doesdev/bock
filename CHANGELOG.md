@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [4.1.0](https://github.com/doesdev/bock/compare/4.0.1...4.1.0)
+
+> 22 September 2021
+
+- Add `transform` option to all log methods
+- Update `mvt`
+
 #### [4.0.1](https://github.com/doesdev/bock/compare/4.0.0...4.0.1)
 
 > 12 November 2020

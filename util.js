@@ -110,7 +110,7 @@ const mapWhiteList = (wl) => {
   return new Map((Array.isArray(wl) ? wl : [wl]).map((k) => [k]))
 }
 
-const logIt = (err = new Error(), level = 'warn', instance) => {
+const logIt = (err = new Error(), level = 'warn', instance, transform) => {
   const toReturn = instance[kTrack] ? Promise.resolve() : null
   if (lvlsInt[level] < lvlsInt[instance[kLogLevel]]) return toReturn
 
@@ -122,6 +122,7 @@ const logIt = (err = new Error(), level = 'warn', instance) => {
   const newline = instance[kNewline]
   const name = err.name || err.toString()
   const whitelist = instance[kWhitelist]
+  const tranIsFunc = typeof transform === 'function'
 
   if (whitelist.has(name) || whitelist.has(err.message)) return toReturn
 
@@ -152,6 +153,9 @@ const logIt = (err = new Error(), level = 'warn', instance) => {
   if (toConsole) {
     const alias = { debug: 'log', fatal: 'error' }
     const logFunc = console[alias[level] || level] || console.log
+
+    if (tranIsFunc) logText = transform(logText)
+
     logFunc(logText)
   }
 
@@ -161,7 +165,8 @@ const logIt = (err = new Error(), level = 'warn', instance) => {
 
     if (instance[kTrack]) {
       return new Promise((resolve, reject) => {
-        writer({ logFilePath, log: stringer(log), newline }, () => resolve())
+        const toWrite = tranIsFunc ? transform(stringer(log)) : stringer(log)
+        writer({ logFilePath, log: toWrite, newline }, () => resolve())
       })
     }
 

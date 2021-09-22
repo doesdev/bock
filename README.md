@@ -32,7 +32,11 @@ Bock exports a primary function which returns an instance with methods
   a `Promise` indicating the log was written
 
 Each of the four methods (`debug`, `info`, `warn`, `fatal`) accept an `Error`
-object, a string, or a function that returns one of those two things.
+object, a string, or a function that returns one of those two things. They also
+accept a second argument (`transform`) which is a function that will accept as
+its only argument the final text output to file and/or console, and what it
+returns will the text value to be logged. This is primarily useful for
+cleansing sensitive information from the output.
 
 Where `const logger = bock([opts])` (i.e. on an instance) the following methods
 are also available

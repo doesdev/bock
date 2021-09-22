@@ -52,10 +52,10 @@ const bock = (id, opts) => {
       instOpts[kLogLevel] = lvlsInt[ll] ? ll : instOpts[kLogLevel] || 'debug'
     },
     setLogLevel (logLevel) { bockInstance.logLevel = logLevel },
-    debug: (err) => logIt(err, 'debug', instOpts),
-    info: (err) => logIt(err, 'info', instOpts),
-    warn: (err) => logIt(err, 'warn', instOpts),
-    fatal: (err) => logIt(err, 'fatal', instOpts),
+    debug: (err, transform) => logIt(err, 'debug', instOpts, transform),
+    info: (err, transform) => logIt(err, 'info', instOpts, transform),
+    warn: (err, transform) => logIt(err, 'warn', instOpts, transform),
+    fatal: (err, transform) => logIt(err, 'fatal', instOpts, transform),
     close () {
       delete instances[id]
       if (cached && cached[kId] === id) cached = undefined

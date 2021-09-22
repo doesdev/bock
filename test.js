@@ -141,6 +141,20 @@ test('function as error', async (assert) => {
   clearAll(logger)
 })
 
+test('transform error text', async (assert) => {
+  const opts = getOpts({ appName: 'transform' })
+  const logger = bock(opts)
+
+  await logger.fatal(new Error('fatal'), (t) => t.replace('ata', 'ootbal'))
+
+  const logFile = path.resolve(opts.logBase, fs.readdirSync(opts.logBase)[0])
+  const log = require(logFile)
+
+  assert.is(log[0].level, 'football')
+
+  clearAll(logger)
+})
+
 test('whitelist', async (assert) => {
   const opts = getOpts({ appName: 'whitelist', whitelist: ['info'] })
   const logger = bock(opts)
